@@ -23,11 +23,6 @@
     </div>
 
     <div class="auth-card">
-      <div class="auth-tabs">
-        <button id="auth-tab-login" class="auth-tab active" type="button">Login</button>
-        <button id="auth-tab-signup" class="auth-tab" type="button">Sign Up</button>
-      </div>
-
       <form id="auth-form" autocomplete="off">
         <label id="auth-name-wrap" class="field hidden" for="auth-name">
           Full Name
@@ -51,6 +46,11 @@
             <option value="student">Student</option>
           </select>
         </label>
+
+        <div class="auth-tabs">
+          <button id="auth-tab-login" class="auth-tab active" type="button">Login</button>
+          <button id="auth-tab-signup" class="auth-tab" type="button">Sign Up</button>
+        </div>
 
         <button id="auth-submit" type="submit" class="primary-btn">Login</button>
       </form>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Attendance Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <section id="auth-page" class="auth-page">
+    <div class="auth-backdrop-shape shape-one"></div>
+    <div class="auth-backdrop-shape shape-two"></div>
+
+    <div class="auth-hero">
+      <p class="hero-kicker">Smart Attendance</p>
+      <h1>Make attendance feel simple, visual, and student-friendly.</h1>
+      <p class="hero-copy">A polished classroom dashboard for teachers and students with instant summaries, day-wise records, and progress tracking.</p>
+      <div class="hero-chips">
+        <span>Quick Daily Marking</span>
+        <span>Per-Student Insights</span>
+        <span>Class + Section Ready</span>
+      </div>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button id="auth-tab-login" class="auth-tab active" type="button">Login</button>
+        <button id="auth-tab-signup" class="auth-tab" type="button">Sign Up</button>
+      </div>
+
+      <form id="auth-form" autocomplete="off">
+        <label id="auth-name-wrap" class="field hidden" for="auth-name">
+          Full Name
+          <input id="auth-name" type="text" placeholder="Enter your name" />
+        </label>
+
+        <label class="field" for="auth-email">
+          Email
+          <input id="auth-email" type="email" placeholder="you@example.com" required />
+        </label>
+
+        <label class="field" for="auth-password">
+          Password
+          <input id="auth-password" type="password" placeholder="Enter password" required />
+        </label>
+
+        <label class="field" for="auth-role">
+          Role
+          <select id="auth-role" required>
+            <option value="teacher">Teacher</option>
+            <option value="student">Student</option>
+          </select>
+        </label>
+
+        <button id="auth-submit" type="submit" class="primary-btn">Login</button>
+      </form>
+
+      <p id="auth-message" class="auth-message"></p>
+    </div>
+  </section>
+
+  <div id="app-shell" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="brand">Attendance Dashboard</div>
+      <nav class="nav-links">
+        <button class="nav-link active" data-page="page-core" type="button">1. Class, Actions, Students, Summary</button>
+        <button class="nav-link" data-page="page-records-tracking" type="button">2. Records & Student Tracking</button>
+        <button class="nav-link" data-page="page-reports" type="button">3. Reports</button>
+        <button class="nav-link" data-page="page-cloud" type="button">4. Cloud Sync</button>
+      </nav>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <h2 class="workspace-title">Attendance Workspace</h2>
+        <div class="topbar-right">
+          <div id="user-badge" class="user-badge"></div>
+          <button id="logout-btn" type="button" class="secondary-btn">Logout</button>
+        </div>
+      </header>
+
+      <div class="dashboard-layout">
+        <div id="page-core" class="dashboard-page active-page">
+          <section id="panel-class" class="panel card panel-class">
+            <h3>Class & Section</h3>
+            <form id="class-form" class="row" autocomplete="off">
+              <input id="class-name" type="text" placeholder="Class name (e.g., Grade 10)" required data-teacher-only />
+              <input id="class-section" type="text" placeholder="Section (e.g., A)" required data-teacher-only />
+              <button type="submit" data-teacher-only>Add Class</button>
+            </form>
+            <div class="actions">
+              <label class="date-label" for="class-select">Current Class</label>
+              <select id="class-select"></select>
+              <button id="delete-class" type="button" class="status-absent" data-teacher-only>Delete Class</button>
+            </div>
+            <p id="class-message" class="action-message"></p>
+          </section>
+
+          <section id="panel-actions" class="panel card panel-actions">
+            <h3>Actions</h3>
+            <div class="actions">
+              <label class="date-label" for="attendance-date">Date</label>
+              <input id="attendance-date" type="date" data-teacher-only />
+              <button id="mark-all-present" type="button" class="status-present" data-teacher-only>Mark All Present</button>
+              <button id="mark-all-absent" type="button" class="status-absent" data-teacher-only>Mark All Absent</button>
+              <button id="save-record" type="button" data-teacher-only>Save Date Record</button>
+            </div>
+            <p id="action-message" class="action-message"></p>
+          </section>
+
+          <section id="panel-students" class="panel card panel-students">
+            <h3>Students</h3>
+            <form id="student-form" class="row" autocomplete="off">
+              <input id="student-name" type="text" placeholder="Enter student name" required data-teacher-only />
+              <button type="submit" data-teacher-only>Add Student</button>
+            </form>
+            <p id="empty-state">No students added yet.</p>
+            <ul id="student-list"></ul>
+          </section>
+
+          <section id="panel-summary" class="panel card summary panel-summary">
+            <h3>Summary</h3>
+            <p>Total Students: <strong id="total">0</strong></p>
+            <p>Present: <strong id="present">0</strong></p>
+            <p>Absent: <strong id="absent">0</strong></p>
+            <p>Attendance: <strong id="percentage">0%</strong></p>
+          </section>
+        </div>
+
+        <div id="page-records-tracking" class="dashboard-page">
+          <section id="panel-records" class="panel card panel-records">
+            <h3>Attendance Records</h3>
+            <p id="record-empty">No date records saved yet.</p>
+            <ul id="record-list"></ul>
+          </section>
+
+          <section id="panel-tracking" class="panel card panel-tracking">
+            <h3>Student Attendance Tracking</h3>
+            <p id="individual-empty">No attendance records available yet.</p>
+            <div class="table-wrap">
+              <table id="individual-table">
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Present Days</th>
+                    <th>Absent Days</th>
+                    <th>Total Days</th>
+                    <th>Attendance %</th>
+                  </tr>
+                </thead>
+                <tbody id="individual-body"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <div id="page-reports" class="dashboard-page">
+          <section id="panel-reports" class="panel card panel-reports">
+            <h3>Reports</h3>
+            <div class="actions">
+              <label class="date-label" for="report-start">Start</label>
+              <input id="report-start" type="date" />
+              <label class="date-label" for="report-end">End</label>
+              <input id="report-end" type="date" />
+              <label class="date-label" for="report-days">Or Last N Days</label>
+              <input id="report-days" type="number" min="1" step="1" placeholder="e.g., 7" />
+            </div>
+            <div class="actions">
+              <button id="export-range-csv" type="button">Export Report CSV</button>
+              <button id="export-student-csv" type="button" class="secondary-btn">Export Student Summary CSV</button>
+            </div>
+            <p id="report-message" class="action-message"></p>
+          </section>
+        </div>
+
+        <div id="page-cloud" class="dashboard-page">
+          <section id="panel-cloud" class="panel card panel-cloud">
+            <h3>Cloud Sync (Supabase)</h3>
+            <div class="row">
+              <input id="cloud-url" type="url" placeholder="Supabase URL (https://xxxx.supabase.co)" />
+              <input id="cloud-key" type="password" placeholder="Supabase anon key" />
+            </div>
+            <div class="actions">
+              <button id="save-cloud-config" type="button">Connect Cloud</button>
+              <button id="upload-cloud" type="button">Upload Local to Cloud</button>
+              <button id="download-cloud" type="button" class="secondary-btn">Download Cloud to Local</button>
+              <button id="clear-cloud-config" type="button" class="secondary-btn">Disconnect</button>
+            </div>
+            <p id="cloud-status" class="action-message"></p>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>

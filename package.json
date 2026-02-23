@@ -1,0 +1,11 @@
+{
+  "name": "attendance-calculator",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start": "py -m http.server 8080",
+    "start:python": "python -m http.server 8080",
+    "start:5500": "py -m http.server 5500",
+    "start:python:5500": "python -m http.server 5500"
+  }
+}

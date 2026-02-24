@@ -11,6 +11,7 @@ const SESSION_KEY = "attendance_session_v1";
 
 let classes = [];
 let currentClassId = "";
+let recordsExpanded = false;
 
 let currentSession = null;
 let authMode = "login";
@@ -37,6 +38,7 @@ const switchToLoginLink = document.getElementById("switch-to-login-link");
 
 const navLinks = Array.from(document.querySelectorAll(".nav-link"));
 const pages = Array.from(document.querySelectorAll(".dashboard-page"));
+const sidebarToggleBtn = document.getElementById("sidebar-toggle");
 const userBadge = document.getElementById("user-badge");
 const logoutBtn = document.getElementById("logout-btn");
 
@@ -72,6 +74,7 @@ const reportMessage = document.getElementById("report-message");
 
 const recordList = document.getElementById("record-list");
 const recordEmpty = document.getElementById("record-empty");
+const recordsDropdownToggle = document.getElementById("records-dropdown-toggle");
 
 const individualBody = document.getElementById("individual-body");
 const individualEmpty = document.getElementById("individual-empty");
@@ -104,6 +107,7 @@ setCloudInputs(loadCloudSettings());
 setupAuthEvents();
 setupNavigationEvents();
 setupAppEvents();
+setupLayoutEvents();
 
 const savedSession = loadSession();
 if (savedSession) {
@@ -174,6 +178,17 @@ function setupNavigationEvents() {
     });
   });
 }
+
+function setupLayoutEvents() {
+  if (!sidebarToggleBtn) return;
+
+  sidebarToggleBtn.addEventListener("click", () => {
+    const collapsed = appShell.classList.toggle("sidebar-collapsed");
+    sidebarToggleBtn.setAttribute("aria-pressed", collapsed ? "true" : "false");
+    sidebarToggleBtn.setAttribute("aria-label", collapsed ? "Show sidebar" : "Hide sidebar");
+    sidebarToggleBtn.setAttribute("title", collapsed ? "Show sidebar" : "Hide sidebar");
+  });
+}
 function setupAppEvents() {
   classForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -195,6 +210,7 @@ function setupAppEvents() {
 
   classSelect.addEventListener("change", () => {
     currentClassId = classSelect.value;
+    recordsExpanded = false;
     setMessage("");
     setReportMessage("");
     render();
@@ -307,8 +323,14 @@ function setupAppEvents() {
     }
 
     current.records.sort((a, b) => (a.date < b.date ? 1 : -1));
+    recordsExpanded = false;
     setMessage(`Saved attendance for ${date}.`, "success");
     render();
+  });
+
+  recordsDropdownToggle.addEventListener("click", () => {
+    recordsExpanded = !recordsExpanded;
+    renderRecords(getCurrentClass());
   });
 
   exportRangeCsvBtn.addEventListener("click", () => {
@@ -327,12 +349,18 @@ function setupAppEvents() {
       return;
     }
 
-    const csv = buildRangeCsv(current, filtered);
+    const stats = buildStudentStatsForRecords(filtered);
+    if (stats.length === 0) {
+      setReportMessage("No student attendance stats available for selected window.", "error");
+      return;
+    }
+
+    const csv = buildRangeCsv(current, stats, resolved.startDate, resolved.endDate);
     downloadCsv(
       csv,
       `attendance-report-${slugify(current.className)}-${slugify(current.section)}-${resolved.startDate}-to-${resolved.endDate}.csv`
     );
-    setReportMessage(`Exported ${filtered.length} day record(s).`, "success");
+    setReportMessage(`Exported summary for ${stats.length} student(s).`, "success");
   });
 
   exportStudentCsvBtn.addEventListener("click", () => {
@@ -894,24 +922,61 @@ function filterRecordsByWindow(records, startDate, endDate) {
   return records.filter((record) => record.date >= startDate && record.date <= endDate);
 }
 
-function buildRangeCsv(currentClass, records) {
-  const rows = [["Class", "Section", "Date", "Student Name", "Status", "Present Count", "Absent Count", "Attendance %"]];
+function buildStudentStatsForRecords(records) {
+  const statsMap = new Map();
 
   records.forEach((record) => {
-    const summary = summarizeRecord(record);
-
     record.entries.forEach((entry) => {
-      rows.push([
-        currentClass.className,
-        currentClass.section,
-        record.date,
-        entry.name,
-        entry.present ? "Present" : "Absent",
-        String(summary.present),
-        String(summary.absent),
-        summary.percentage.toFixed(1),
-      ]);
+      if (!statsMap.has(entry.studentId)) {
+        statsMap.set(entry.studentId, {
+          studentId: entry.studentId,
+          name: entry.name,
+          presentDays: 0,
+          absentDays: 0,
+          totalDays: 0,
+        });
+      }
+
+      const stat = statsMap.get(entry.studentId);
+      stat.totalDays += 1;
+      if (entry.present) {
+        stat.presentDays += 1;
+      } else {
+        stat.absentDays += 1;
+      }
     });
+  });
+
+  return Array.from(statsMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function buildRangeCsv(currentClass, stats, startDate, endDate) {
+  const rows = [[
+    "Class",
+    "Section",
+    "Start Date",
+    "End Date",
+    "Student",
+    "Present Days",
+    "Absent Days",
+    "Total Days",
+    "Attendance %",
+  ]];
+
+  stats.forEach((entry) => {
+    const percentage = entry.totalDays === 0 ? 0 : (entry.presentDays / entry.totalDays) * 100;
+
+    rows.push([
+      currentClass.className,
+      currentClass.section,
+      startDate,
+      endDate,
+      entry.name,
+      String(entry.presentDays),
+      String(entry.absentDays),
+      String(entry.totalDays),
+      percentage.toFixed(1),
+    ]);
   });
 
   return rows.map((row) => row.map(escapeCsvCell).join(",")).join("\n");
@@ -1035,12 +1100,25 @@ function renderRecords(current) {
 
   if (!current || current.records.length === 0) {
     recordEmpty.style.display = "block";
+    recordsDropdownToggle.classList.add("hidden");
     return;
   }
 
   recordEmpty.style.display = "none";
+  const hasOlderRecords = current.records.length > 1;
 
-  current.records.forEach((record) => {
+  if (hasOlderRecords) {
+    recordsDropdownToggle.classList.remove("hidden");
+    recordsDropdownToggle.textContent = recordsExpanded
+      ? "Hide Older Records"
+      : `Show Older Records (${current.records.length - 1})`;
+  } else {
+    recordsDropdownToggle.classList.add("hidden");
+  }
+
+  const visibleRecords = recordsExpanded ? current.records : current.records.slice(0, 1);
+
+  visibleRecords.forEach((record) => {
     const summary = summarizeRecord(record);
 
     const item = document.createElement("li");

@@ -74,7 +74,14 @@
 
     <main class="workspace">
       <header class="topbar">
-        <h2 class="workspace-title">Attendance Workspace</h2>
+        <div class="topbar-left">
+          <button id="sidebar-toggle" type="button" class="sidebar-toggle" aria-label="Hide sidebar" aria-pressed="false">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <h2 class="workspace-title">Attendance Workspace</h2>
+        </div>
         <div class="topbar-right">
           <div id="user-badge" class="user-badge"></div>
           <button id="logout-btn" type="button" class="secondary-btn">Logout</button>
@@ -132,6 +139,9 @@
         <div id="page-records-tracking" class="dashboard-page">
           <section id="panel-records" class="panel card panel-records">
             <h3>Attendance Records</h3>
+            <button id="records-dropdown-toggle" type="button" class="secondary-btn records-dropdown-toggle hidden">
+              Show Older Records
+            </button>
             <p id="record-empty">No date records saved yet.</p>
             <ul id="record-list"></ul>
           </section>
@@ -169,7 +179,7 @@
             </div>
             <div class="actions">
               <button id="export-range-csv" type="button">Export Report CSV</button>
-              <button id="export-student-csv" type="button" class="secondary-btn">Export Student Summary CSV</button>
+              <button id="export-student-csv" type="button" class="secondary-btn">Export Full Student Summary</button>
             </div>
             <p id="report-message" class="action-message"></p>
           </section>

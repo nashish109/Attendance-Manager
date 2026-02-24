@@ -21,6 +21,7 @@ body {
   font-family: "Poppins", "Segoe UI", sans-serif;
   background: linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
   color: var(--text);
+  overflow-x: hidden;
 }
 
 .hidden {
@@ -249,9 +250,15 @@ button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn):hover {
 }
 
 .app-shell {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   grid-template-columns: 250px 1fr;
+  transition: grid-template-columns 0.25s ease;
+  align-items: start;
+}
+
+.app-shell.sidebar-collapsed {
+  grid-template-columns: 0 1fr;
 }
 
 .sidebar {
@@ -262,6 +269,13 @@ button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn):hover {
   top: 0;
   height: 100vh;
   overflow-y: auto;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.app-shell.sidebar-collapsed .sidebar {
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .brand {
@@ -300,6 +314,7 @@ button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn):hover {
 
 .workspace {
   padding: 18px;
+  min-width: 0;
 }
 
 .topbar {
@@ -308,6 +323,43 @@ button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn):hover {
   align-items: center;
   gap: 12px;
   margin-bottom: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  padding: 10px 0;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-toggle {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #9db0c2;
+  border-radius: 10px;
+  background: #fff;
+  color: #223649;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0;
+}
+
+.sidebar-toggle span {
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+}
+
+.sidebar-toggle:hover {
+  background: #eef4fa;
 }
 
 .workspace-title {
@@ -332,6 +384,7 @@ button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn):hover {
 
 .dashboard-layout {
   display: block;
+  min-width: 0;
 }
 
 .card {
@@ -360,6 +413,7 @@ button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn):hover {
 .dashboard-page.active-page {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-content: start;
 }
 
 #page-core .panel-class,
@@ -448,6 +502,10 @@ button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn):hover {
   margin: 8px 0;
 }
 
+.records-dropdown-toggle {
+  margin-bottom: 8px;
+}
+
 .record-meta {
   color: var(--muted);
   font-size: 14px;
@@ -456,6 +514,7 @@ button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn):hover {
 .table-wrap {
   margin-top: 10px;
   overflow-x: auto;
+  max-width: 100%;
 }
 
 table {
@@ -509,9 +568,20 @@ th {
     grid-template-columns: 1fr;
   }
 
+  .app-shell.sidebar-collapsed {
+    grid-template-columns: 1fr;
+  }
+
   .sidebar {
     position: static;
     height: auto;
+  }
+
+  .app-shell.sidebar-collapsed .sidebar {
+    display: none;
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .nav-links {

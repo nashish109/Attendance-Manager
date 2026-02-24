@@ -152,27 +152,13 @@ body {
   align-self: center;
 }
 
-.auth-tabs {
-  display: flex;
-  margin: 16px 0 14px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.auth-tab {
-  flex: 1;
-  border: 0;
-  background: #f8fafc;
-  color: var(--muted);
-  font-weight: 600;
-  padding: 10px;
-  cursor: pointer;
-}
-
-.auth-tab.active {
-  background: var(--accent);
-  color: #fff;
+.auth-title {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #3f5568;
 }
 
 .field {
@@ -205,13 +191,13 @@ button {
 }
 
 .primary-btn,
-button:not(.secondary-btn):not(.status-absent) {
+button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn) {
   background: var(--accent);
   color: #fff;
 }
 
 .primary-btn:hover,
-button:not(.secondary-btn):not(.status-absent):hover {
+button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn):hover {
   background: var(--accent-strong);
 }
 
@@ -234,6 +220,32 @@ button:not(.secondary-btn):not(.status-absent):hover {
   min-height: 20px;
   margin: 12px 0 0;
   color: var(--danger);
+}
+
+.auth-links {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-link {
+  color: var(--accent);
+  font-size: 13px;
+  text-decoration: none;
+  font-weight: 600;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+.auth-link-btn {
+  cursor: pointer;
 }
 
 .app-shell {

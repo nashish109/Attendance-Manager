@@ -23,6 +23,7 @@
     </div>
 
     <div class="auth-card">
+      <p id="auth-title" class="auth-title">Welcome Back</p>
       <form id="auth-form" autocomplete="off">
         <label id="auth-name-wrap" class="field hidden" for="auth-name">
           Full Name
@@ -47,12 +48,13 @@
           </select>
         </label>
 
-        <div class="auth-tabs">
-          <button id="auth-tab-login" class="auth-tab active" type="button">Login</button>
-          <button id="auth-tab-signup" class="auth-tab" type="button">Sign Up</button>
-        </div>
-
         <button id="auth-submit" type="submit" class="primary-btn">Login</button>
+
+        <div class="auth-links">
+          <a id="forgot-password-link" href="#" class="auth-link">Forgot password?</a>
+          <button id="switch-to-signup-link" type="button" class="auth-link auth-link-btn">New to the website? Sign up</button>
+          <button id="switch-to-login-link" type="button" class="auth-link auth-link-btn hidden">Already have an account? Login</button>
+        </div>
       </form>
 
       <p id="auth-message" class="auth-message"></p>

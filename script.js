@@ -23,8 +23,6 @@ let cloudSyncInFlight = false;
 const authPage = document.getElementById("auth-page");
 const appShell = document.getElementById("app-shell");
 const authForm = document.getElementById("auth-form");
-const authTabLogin = document.getElementById("auth-tab-login");
-const authTabSignup = document.getElementById("auth-tab-signup");
 const authNameWrap = document.getElementById("auth-name-wrap");
 const authNameInput = document.getElementById("auth-name");
 const authEmailInput = document.getElementById("auth-email");
@@ -32,6 +30,10 @@ const authPasswordInput = document.getElementById("auth-password");
 const authRoleSelect = document.getElementById("auth-role");
 const authSubmitBtn = document.getElementById("auth-submit");
 const authMessage = document.getElementById("auth-message");
+const authTitle = document.getElementById("auth-title");
+const forgotPasswordLink = document.getElementById("forgot-password-link");
+const switchToSignupLink = document.getElementById("switch-to-signup-link");
+const switchToLoginLink = document.getElementById("switch-to-login-link");
 
 const navLinks = Array.from(document.querySelectorAll(".nav-link"));
 const pages = Array.from(document.querySelectorAll(".dashboard-page"));
@@ -112,16 +114,6 @@ if (savedSession) {
 }
 
 function setupAuthEvents() {
-  authTabLogin.addEventListener("click", () => {
-    authMode = "login";
-    renderAuthMode();
-  });
-
-  authTabSignup.addEventListener("click", () => {
-    authMode = "signup";
-    renderAuthMode();
-  });
-
   authForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
@@ -145,6 +137,25 @@ function setupAuthEvents() {
     }
 
     login(email, password, role);
+  });
+
+  forgotPasswordLink.addEventListener("click", (event) => {
+    event.preventDefault();
+    setAuthMessage("Password reset is not available yet. Please create a new account.");
+  });
+
+  switchToSignupLink.addEventListener("click", (event) => {
+    event.preventDefault();
+    authMode = "signup";
+    renderAuthMode();
+    authNameInput.focus();
+  });
+
+  switchToLoginLink.addEventListener("click", (event) => {
+    event.preventDefault();
+    authMode = "login";
+    renderAuthMode();
+    authEmailInput.focus();
   });
 
   logoutBtn.addEventListener("click", () => {
@@ -393,11 +404,12 @@ function setupAppEvents() {
 function renderAuthMode() {
   const signup = authMode === "signup";
 
-  authTabLogin.classList.toggle("active", !signup);
-  authTabSignup.classList.toggle("active", signup);
+  authTitle.textContent = signup ? "Create Account" : "Welcome Back";
   authNameWrap.classList.toggle("hidden", !signup);
   authNameInput.required = signup;
   authSubmitBtn.textContent = signup ? "Create Account" : "Login";
+  switchToSignupLink.classList.toggle("hidden", signup);
+  switchToLoginLink.classList.toggle("hidden", !signup);
   authMessage.textContent = "";
 }
 

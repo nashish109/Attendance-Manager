@@ -16,6 +16,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   margin: 0;
   font-family: "Poppins", "Segoe UI", sans-serif;
@@ -397,6 +401,7 @@ button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn):hover {
 
 .panel {
   scroll-margin-top: 20px;
+  min-width: 0;
 }
 
 .panel h3 {
@@ -414,25 +419,38 @@ button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn):hover {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   align-content: start;
+  align-items: start;
 }
 
 #page-core .panel-class,
 #page-core .panel-actions {
   grid-column: span 6;
+  align-self: start;
 }
 
 #page-core .panel-students {
   grid-column: span 8;
+  display: flex;
+  flex-direction: column;
+  max-height: 520px;
+  overflow: hidden;
+  align-self: start;
 }
 
 #page-core .panel-summary {
   grid-column: span 4;
+  align-self: start;
 }
 
 #page-records-tracking .panel-records,
 #page-records-tracking .panel-tracking,
 #page-reports .panel-reports,
-#page-cloud .panel-cloud {
+#page-cloud .panel-cloud,
+#page-student-dashboard .panel-student-dashboard,
+#page-student-subjects .panel-student-subjects,
+#page-student-calculator .panel-student-calculator,
+#page-student-profile .panel-student-profile,
+#page-teacher-profile .panel-teacher-profile {
   grid-column: span 12;
 }
 
@@ -458,6 +476,9 @@ button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn):hover {
 #report-message.error,
 #class-message.error,
 #cloud-status.error,
+#subject-message.error,
+#profile-message.error,
+#teacher-profile-message.error,
 #action-message.error {
   color: var(--danger);
 }
@@ -465,8 +486,17 @@ button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn):hover {
 #report-message.success,
 #class-message.success,
 #cloud-status.connected,
+#subject-message.success,
+#profile-message.success,
+#teacher-profile-message.success,
 #action-message.success {
   color: var(--success);
+}
+
+#subject-message.warning,
+#profile-message.warning,
+#teacher-profile-message.warning {
+  color: #b45309;
 }
 
 #student-list,
@@ -474,8 +504,16 @@ button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn):hover {
   list-style: none;
   margin: 10px 0 0;
   padding: 0;
-  max-height: 360px;
+  max-height: none;
+  overflow: visible;
+}
+
+#page-core #student-list {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .student-item,
@@ -496,10 +534,156 @@ button:not(.secondary-btn):not(.status-absent):not(.auth-link-btn):hover {
 .student-controls {
   display: flex;
   gap: 8px;
+  align-items: center;
+}
+
+.attendance-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.attendance-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+.attendance-state.present {
+  color: var(--success);
+}
+
+.attendance-state.absent {
+  color: var(--danger);
 }
 
 .summary p {
   margin: 8px 0;
+}
+
+.student-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.kpi-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  background: #f9fcff;
+}
+
+.kpi-card p {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.kpi-card strong {
+  font-size: 22px;
+}
+
+.subsection-title {
+  margin: 20px 0 8px;
+  font-size: 16px;
+  color: #334155;
+}
+
+.student-progress-wrap {
+  margin-top: 14px;
+}
+
+.student-progress-track {
+  width: 100%;
+  height: 14px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.student-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #14b8a6, #0f766e);
+  transition: width 0.2s ease;
+}
+
+#dashboard-subject-empty {
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+.trend-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  background: #fbfdff;
+}
+
+#attendance-trend-chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.projection-kpis {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.alerts-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.alert-item {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #334155;
+  background: #f8fafc;
+}
+
+.alert-safe {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.alert-warning {
+  border-color: #facc15;
+  background: #fefce8;
+}
+
+.alert-critical {
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.status-safe {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.status-warning {
+  color: #b45309;
+  font-weight: 600;
+}
+
+.status-critical {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.profile-grid .actions {
+  grid-column: 1 / -1;
 }
 
 .records-dropdown-toggle {
@@ -545,6 +729,19 @@ th {
   #page-core .panel-students,
   #page-core .panel-summary {
     grid-column: span 12;
+  }
+
+  #page-core .panel-students {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .student-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .projection-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -614,5 +811,14 @@ th {
   .record-item {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .student-kpis,
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .projection-kpis {
+    grid-template-columns: 1fr;
   }
 }

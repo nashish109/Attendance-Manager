@@ -69,6 +69,11 @@
         <button class="nav-link" data-page="page-records-tracking" type="button">2. Records & Student Tracking</button>
         <button class="nav-link" data-page="page-reports" type="button">3. Reports</button>
         <button class="nav-link" data-page="page-cloud" type="button">4. Cloud Sync</button>
+        <button class="nav-link" data-page="page-student-dashboard" type="button">Dashboard</button>
+        <button class="nav-link" data-page="page-student-subjects" type="button">Subjects</button>
+        <button class="nav-link" data-page="page-student-calculator" type="button">Calculator</button>
+        <button class="nav-link" data-page="page-student-profile" type="button">Profile</button>
+        <button class="nav-link" data-page="page-teacher-profile" type="button">Teacher Profile</button>
       </nav>
     </aside>
 
@@ -91,10 +96,11 @@
       <div class="dashboard-layout">
         <div id="page-core" class="dashboard-page active-page">
           <section id="panel-class" class="panel card panel-class">
-            <h3>Class & Section</h3>
+            <h3>Class, Section & Subject</h3>
             <form id="class-form" class="row" autocomplete="off">
               <input id="class-name" type="text" placeholder="Class name (e.g., Grade 10)" required data-teacher-only />
               <input id="class-section" type="text" placeholder="Section (e.g., A)" required data-teacher-only />
+              <input id="class-subject" type="text" placeholder="Subject (e.g., Mathematics)" required data-teacher-only />
               <button type="submit" data-teacher-only>Add Class</button>
             </form>
             <div class="actions">
@@ -199,6 +205,190 @@
               <button id="clear-cloud-config" type="button" class="secondary-btn">Disconnect</button>
             </div>
             <p id="cloud-status" class="action-message"></p>
+          </section>
+        </div>
+
+        <div id="page-student-dashboard" class="dashboard-page">
+          <section class="panel card panel-student-dashboard">
+            <h3>Academic Attendance Overview</h3>
+            <div class="student-kpis">
+              <div class="kpi-card">
+                <p>Overall Attendance Percentage</p>
+                <strong id="student-overall-percentage">0%</strong>
+              </div>
+              <div class="kpi-card">
+                <p>Total Classes Conducted</p>
+                <strong id="student-total-classes">0</strong>
+              </div>
+              <div class="kpi-card">
+                <p>Total Classes Attended</p>
+                <strong id="student-attended-classes">0</strong>
+              </div>
+              <div class="kpi-card">
+                <p>Required Minimum</p>
+                <strong id="student-required-percentage">75%</strong>
+              </div>
+              <div class="kpi-card">
+                <p>Compliance Status</p>
+                <strong id="student-compliance-status">Compliant</strong>
+              </div>
+            </div>
+
+            <h4 class="subsection-title">Subject Performance Analytics</h4>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Subject Name</th>
+                    <th>Total Classes</th>
+                    <th>Attended Classes</th>
+                    <th>Attendance %</th>
+                    <th>Deviation from Threshold</th>
+                    <th>Risk Level</th>
+                    <th>Classes Required to Regain Compliance</th>
+                  </tr>
+                </thead>
+                <tbody id="dashboard-subject-body"></tbody>
+              </table>
+              <p id="dashboard-subject-empty">No teacher-linked subject attendance found.</p>
+            </div>
+
+            <h4 class="subsection-title">Attendance Trend Analysis</h4>
+            <div class="trend-card">
+              <svg id="attendance-trend-chart" viewBox="0 0 800 220" role="img" aria-label="Attendance trend chart"></svg>
+              <p id="trend-empty" class="action-message hidden">Not enough date-wise records to build trend.</p>
+            </div>
+
+            <h4 class="subsection-title">Compliance Projection</h4>
+            <div class="student-kpis projection-kpis">
+              <div class="kpi-card">
+                <p>Projected % (Next Subject Cycle)</p>
+                <strong id="projection-percentage">0%</strong>
+              </div>
+              <div class="kpi-card">
+                <p>Maximum Allowable Absences</p>
+                <strong id="projection-allowable-absences">0</strong>
+              </div>
+              <div class="kpi-card">
+                <p>Consecutive Classes to Regain Compliance</p>
+                <strong id="projection-required-classes">0</strong>
+              </div>
+            </div>
+
+            <h4 class="subsection-title">Risk & Alert Summary</h4>
+            <div id="student-alerts" class="alerts-list"></div>
+          </section>
+        </div>
+
+        <div id="page-student-subjects" class="dashboard-page">
+          <section class="panel card panel-student-subjects">
+            <h3>Subject-wise Attendance</h3>
+            <p class="action-message">Subjects are synced from teacher records. Students cannot add subjects.</p>
+            <p id="subject-message" class="action-message"></p>
+            <div class="table-wrap">
+              <table id="subject-table">
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>Class</th>
+                    <th>Section</th>
+                    <th>Assigned Teacher</th>
+                    <th>Total Classes</th>
+                    <th>Attended Classes</th>
+                    <th>Attendance %</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="subject-body"></tbody>
+              </table>
+            </div>
+            <p id="subject-empty">No subjects added yet.</p>
+          </section>
+        </div>
+
+        <div id="page-student-calculator" class="dashboard-page">
+          <section class="panel card panel-student-calculator">
+            <h3>Attendance Calculator</h3>
+            <div class="row">
+              <input id="calc-total-classes" type="number" min="0" step="1" placeholder="Total classes" />
+              <input id="calc-attended-classes" type="number" min="0" step="1" placeholder="Attended classes" />
+              <input id="calc-target-percentage" type="number" min="1" max="100" step="0.1" placeholder="Target %" />
+            </div>
+            <div class="student-kpis">
+              <div class="kpi-card">
+                <p>Current Attendance</p>
+                <strong id="calc-current-percentage">0%</strong>
+              </div>
+              <div class="kpi-card">
+                <p>Target Attendance</p>
+                <strong id="calc-target-display">75%</strong>
+              </div>
+            </div>
+            <p id="calc-result" class="action-message"></p>
+          </section>
+        </div>
+
+        <div id="page-student-profile" class="dashboard-page">
+          <section class="panel card panel-student-profile">
+            <h3>Student Profile</h3>
+            <form id="profile-form" class="profile-grid" autocomplete="off">
+              <label class="field" for="profile-name">
+                Name
+                <input id="profile-name" type="text" required />
+              </label>
+              <label class="field" for="profile-roll">
+                Roll Number
+                <input id="profile-roll" type="text" />
+              </label>
+              <label class="field" for="profile-department">
+                Class
+                <input id="profile-department" type="text" />
+              </label>
+              <label class="field" for="profile-semester">
+                Section
+                <input id="profile-semester" type="text" />
+              </label>
+              <label class="field" for="profile-target">
+                Target Attendance %
+                <input id="profile-target" type="number" min="1" max="100" step="0.1" required />
+              </label>
+              <div class="actions">
+                <button id="profile-edit-btn" type="button" class="secondary-btn">Edit Profile</button>
+                <button id="profile-save-btn" type="submit">Save Profile</button>
+                <button id="profile-logout-btn" type="button" class="secondary-btn">Logout</button>
+              </div>
+            </form>
+            <p id="profile-message" class="action-message"></p>
+          </section>
+        </div>
+
+        <div id="page-teacher-profile" class="dashboard-page">
+          <section class="panel card panel-teacher-profile">
+            <h3>Teacher Profile</h3>
+            <form id="teacher-profile-form" class="profile-grid" autocomplete="off">
+              <label class="field" for="teacher-profile-name">
+                Name
+                <input id="teacher-profile-name" type="text" required />
+              </label>
+              <label class="field" for="teacher-profile-id">
+                Teacher ID
+                <input id="teacher-profile-id" type="text" />
+              </label>
+              <label class="field" for="teacher-profile-department">
+                Department
+                <input id="teacher-profile-department" type="text" />
+              </label>
+              <label class="field" for="teacher-profile-subject">
+                Primary Subject
+                <input id="teacher-profile-subject" type="text" />
+              </label>
+              <div class="actions">
+                <button id="teacher-profile-edit-btn" type="button" class="secondary-btn">Edit Profile</button>
+                <button id="teacher-profile-save-btn" type="submit">Save Profile</button>
+                <button id="teacher-profile-logout-btn" type="button" class="secondary-btn">Logout</button>
+              </div>
+            </form>
+            <p id="teacher-profile-message" class="action-message"></p>
           </section>
         </div>
       </div>
